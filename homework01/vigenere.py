@@ -12,18 +12,29 @@ def encrypt_vigenere(plaintext: str, keyword: str) -> str:
     'LXFOPVEFRNHR'
     """
 
-    alp = 'abcdefghijklmnopqrstuvwxyz'
-    alpU = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    f = lambda arg: alp[(alp.index(arg[0]) + alp.index(arg[1]) % 26) % 26]
-    fu = lambda arg: alpU[(alpU.index(arg[0]) + alpU.index(arg[1]) % 26) % 26]
-
-    if plaintext[0].isupper():
-        ciphertext = ''.join(map(fu, zip(plaintext, cycle(keyword))))
-    else:
-        ciphertext = ''.join(map(f, zip(plaintext, cycle(keyword))))
+    ciphertext = ""
+    keyword1 = []
+    for i in range(len(keyword)):
+        if keyword[i].isupper():
+            keyword1.append(ord(keyword[i]) - 65)
+        if keyword[i].islower():
+            keyword1.append(ord(keyword[i]) - 97)
+    if len(plaintext) > len(keyword1):
+        keyword1 *= len(plaintext) // len(keyword1) + 1
+    for i in range(len(plaintext)):
+        if plaintext[i].islower():
+            if (ord(plaintext[i]) + keyword1[i]) > 122:
+                ciphertext += chr(ord(plaintext[i]) + keyword1[i] - 26)
+            else:
+                ciphertext += chr(ord(plaintext[i]) + keyword1[i])
+        elif plaintext[i].isupper():
+            if (ord(plaintext[i]) + keyword1[i]) > 90:
+                ciphertext += chr(ord(plaintext[i]) + keyword1[i] - 26)
+            else:
+                ciphertext += chr(ord(plaintext[i]) + keyword1[i])
+        else:
+            ciphertext += plaintext[i]
     return ciphertext
-
-
 
 
 def decrypt_vigenere(ciphertext: str, keyword: str) -> str:
@@ -37,18 +48,29 @@ def decrypt_vigenere(ciphertext: str, keyword: str) -> str:
     >>> decrypt_vigenere("LXFOPVEFRNHR", "LEMON")
     'ATTACKATDAWN'
     """
+
     plaintext = ""
-
-    alp = 'abcdefghijklmnopqrstuvwxyz'
-    alpU = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-    f = lambda arg: alp[alp.index(arg[0]) - alp.index(arg[1]) % 26]
-    fu = lambda arg: alpU[alpU.index(arg[0]) - alpU.index(arg[1]) % 26]
-
-    if ciphertext[0].isupper():
-        plaintext = ''.join(map(fu, zip(ciphertext, cycle(keyword))))
-    else:
-        plaintext = ''.join(map(f, zip(ciphertext, cycle(keyword))))
+    keyword1 = []
+    for i in range(len(keyword)):
+        if keyword[i].isupper():
+            keyword1.append(ord(keyword[i]) - 65)
+        if keyword[i].islower():
+            keyword1.append(ord(keyword[i]) - 97)
+    if len(ciphertext) > len(keyword1):
+        keyword1 *= len(ciphertext) // len(keyword1) + 1
+    for i in range(len(ciphertext)):
+        if ciphertext[i].islower():
+            if (ord(ciphertext[i]) - keyword1[i]) < 97:
+                plaintext += chr(ord(ciphertext[i]) - keyword1[i] + 26)
+            else:
+                plaintext += chr(ord(ciphertext[i]) - keyword1[i])
+        elif ciphertext[i].isupper():
+            if (ord(ciphertext[i]) - keyword1[i]) < 65:
+                plaintext += chr(ord(ciphertext[i]) - keyword1[i] + 26)
+            else:
+                plaintext += chr(ord(ciphertext[i]) - keyword1[i])
+        else:
+            plaintext += ciphertext[i]
     return plaintext
 
 
